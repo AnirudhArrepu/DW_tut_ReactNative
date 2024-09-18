@@ -93,6 +93,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
+  container:{
+    alignContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },    
   container2:{
     flexDirection: 'row',
     // alignItems: 'flex-start',
