@@ -99,12 +99,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },    
   container2:{
+    display: 'flex',
     flexDirection: 'row',
-    // alignItems: 'flex-start',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
     padding: 20,
   },
   icon:{
+    alignItems: 'center',
     padding: 10,
     margin: 4,
   },
