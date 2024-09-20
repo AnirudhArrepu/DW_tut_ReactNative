@@ -35,9 +35,11 @@ export default function App() {
       const querySnapshot = await getDocs(collection(db, 'items'));
       let loadingItems = [];
       querySnapshot.forEach((doc)=>{
-        console.log(doc);
-        loadingItems.push(doc);
+        console.log(doc.data().title, doc.data().description);
+        loadingItems.push(doc.data());
       })
+      // console.log(loadingItems);
+      
       setData(loadingItems);
     }
     readData();
