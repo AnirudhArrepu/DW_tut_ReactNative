@@ -5,24 +5,29 @@ import Tile from './components/itemWidget.js';
 import { useEffect, useState } from 'react';
 import { FAB } from 'react-native-paper';
 import { collection, addDoc, getDocs} from 'firebase/firestore';
-import { db } from './firebase.js'
+import { db, storage } from './firebase.js'
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export default function App() {
 
-  const [data, setData] = useState([
-    {title: 'hi', description: '300'},
-    {title: 'hi', description: '400'},
-    {title: 'hi', description: '500'},
-    {title: 'hi', description: '600'},
-    {title: 'hi', description: '700'},
-  ]);
+  const [data, setData] = useState([]);
 
 
-  const addData = async (title, description) =>{
+  const addData = async (title, description, imageUri) =>{
     try {
+        const response = await fetch(imageUri)
+        const blob = await response.blob();
+
+        const storageRef = ref(storage, `images/${title}`);
+
+        await uploadBytes(storageRef, blob);
+
+        const downloadUri = getDownloadURL(storageRef);
+
         await addDoc(collection(db, 'items'),{
             title: title,
-            description: description
+            description: description,
+            image: downloadUri
         });
     }catch(e){
         console.error('error in add data', e);
@@ -54,14 +59,16 @@ export default function App() {
           style={styles.fab}
           icon="plus"
           onPress={()=>{
-
+            addData('hi', 'hellotest');
+            console.log('added');
+            
           }}
         />
       </View>
       <ScrollView style={styles.scrollable}>
         {
           data.map((item, index) => (
-            <Tile key={index} title={item.title} description={item.description} />
+            <Tile key={index} title={item.title} description={item.description} imageUri={item.image}/>
           ))
         }
       </ScrollView>

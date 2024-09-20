@@ -2,13 +2,13 @@ import React from "react";
 import { SafeAreaView, Text, StyleSheet, View, Image } from "react-native";
 
 
-function Tile({ title, description }) {
+function Tile({ title, description, imageUri }) {
 
   return (
     <View style={styles.parent}>
       <View style={styles.tile}>
         <Image
-          source={require('./adaptive-icon.png')} 
+          source={{uri: imageUri}} 
           style={styles.image} 
         />
         <View style={styles.divisionContainer}>
