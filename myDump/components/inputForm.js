@@ -2,11 +2,36 @@ import React, { useState, useEffect } from 'react';
 import { SafeAreaView, Text, TextInput, StyleSheet, Button, Image, Platform, ScrollView, View, KeyboardAvoidingViewComponent, KeyboardAvoidingView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { collection, addDoc, getDocs} from 'firebase/firestore';
+import { db, storage } from '../firebase.js'
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const InputForm = () => {
   const [imageUri, setImageUri] = useState(null);
   const [heading, setHeading] = useState('');
   const [subheading, setSubheading] = useState('');
+  
+
+  const addData = async (title, description, imageUri) =>{
+    try {
+        const response = await fetch(imageUri)
+        const blob = await response.blob();
+
+        const storageRef = ref(storage, `images/${title}`);
+
+        await uploadBytes(storageRef, blob);
+
+        const downloadUri = await getDownloadURL(storageRef);
+
+        await addDoc(collection(db, 'items'),{
+            title: title,
+            description: description,
+            image: downloadUri
+        });
+    }catch(e){
+        console.error('error in add data', e);
+    }
+  }
 
   useEffect(() => {
     (async () => {
@@ -37,14 +62,7 @@ const InputForm = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-
-        <View style={styles.container2}>
-            <Icon style={styles.icon} name="arrow-back" size={24} color="black" />
-            <Text style={styles.text}>N E W    I T E M</Text>
-        </View>
-        
-        
+    <SafeAreaView style={styles.safeArea}>        
       <ScrollView contentContainerStyle={styles.container}>
 
         <Text style={styles.text}>Name</Text>
@@ -80,6 +98,7 @@ const InputForm = () => {
           console.log('Image URI:', imageUri);
           console.log('Heading:', heading);
           console.log('Subheading:', subheading);
+          addData(heading, subheading, imageUri);
         }} />
       </ScrollView>
     </SafeAreaView>

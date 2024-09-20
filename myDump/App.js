@@ -8,72 +8,24 @@ import { collection, addDoc, getDocs} from 'firebase/firestore';
 import { db, storage } from './firebase.js'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './components/homeScreen.js';
+
+
+const stack = createNativeStackNavigator();
+
+// import { Link } from 'expo-router'
+
 export default function App() {
-
-  const [data, setData] = useState([]);
-
-
-  const addData = async (title, description, imageUri) =>{
-    try {
-        const response = await fetch(imageUri)
-        const blob = await response.blob();
-
-        const storageRef = ref(storage, `images/${title}`);
-
-        await uploadBytes(storageRef, blob);
-
-        const downloadUri = getDownloadURL(storageRef);
-
-        await addDoc(collection(db, 'items'),{
-            title: title,
-            description: description,
-            image: downloadUri
-        });
-    }catch(e){
-        console.error('error in add data', e);
-    }
-  }
-
-  
-  useEffect(()=>{
-    const readData = async () => {
-      const querySnapshot = await getDocs(collection(db, 'items'));
-      let loadingItems = [];
-      querySnapshot.forEach((doc)=>{
-        console.log(doc.data().title, doc.data().description);
-        loadingItems.push(doc.data());
-      })
-      // console.log(loadingItems);
-      
-      setData(loadingItems);
-    }
-    readData();
-  }, [])
-
-  return (
-    <View style={styles.container}>
-      {/* <InputForm/> */}
-      <View style={styles.appbar}>
-        <Text style={styles.text}>H E L L O</Text>
-        <FAB
-          style={styles.fab}
-          icon="plus"
-          onPress={()=>{
-            addData('hi', 'hellotest');
-            console.log('added');
-            
-          }}
-        />
-      </View>
-      <ScrollView style={styles.scrollable}>
-        {
-          data.map((item, index) => (
-            <Tile key={index} title={item.title} description={item.description} imageUri={item.image}/>
-          ))
-        }
-      </ScrollView>
-    </View>
-  ); 
+  return(
+    <NavigationContainer>
+      <stack.Navigator initialRouteName = 'Home'>
+        <stack.Screen name="H O M E" component={HomeScreen}/>
+        <stack.Screen name="A D D  I T E M" component={InputForm}/>
+      </stack.Navigator>
+    </NavigationContainer>
+  )
 }
 
 const styles = StyleSheet.create({
